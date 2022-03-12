@@ -1,0 +1,25 @@
+/api/env
+/api/tools/__pycache__
+/website/node_modules
+/website/.pnp
+/website/.pnp.js
+
+# testing
+/website/coverage
+
+# production
+/website/build
+
+# misc
+/website/.DS_Store
+/website/website.env.local
+/website/website.env.development.local
+/website/website.env.test.local
+/website/website.env.production.local
+
+/website/websitenpm-debug.log*
+/website/websiteyarn-debug.log*
+/website/websiteyarn-error.log*
+
+/docker/data/mysql/
+/docker/logs/api/

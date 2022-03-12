@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+    transaction-api:
+        image:
+            api:1
+        build:
+            context: ../api
+            dockerfile: ./Dockerfile
+        ports:
+            - ${BACKEND_CONNECTION_PORT}:5000
+        environment:
+            SQL_HOSTNAME: ${SQL_HOSTNAME}
+            SQL_USERNAME: ${SQL_USERNAME}
+            SQL_PASSWORD: ${SQL_PASSWORD}
+            SQL_DATABASE: ${SQL_DATABASE}
+        volumes:
+            - ${LOGS_VOL_FOLDER}/api:/app/logs
+            - ${TIMEZONE_FOLDER}/timezone:/etc/timezone
+            - ${TIMEZONE_FOLDER}/localtime:/etc/localtime
+        restart:
+            always
+    mysql:
+        image:
+            mysql:latest
+        ports: 
+            - ${SQL_CONNECTION_PORT}:3306
+        environment: 
+            MYSQL_DATABASE: ${SQL_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${SQL_PASSWORD}
+        volumes: 
+            - ${SQL_VOL_FOLDER}:/var/lib/mysql
+            - ${TIMEZONE_FOLDER}/timezone:/etc/timezone
+            - ${TIMEZONE_FOLDER}/localtime:/etc/localtime
+        restart: 
+            always
