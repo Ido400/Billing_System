@@ -1,6 +1,19 @@
 version: '3.9'
 
 services:
+    website:
+        image:
+            website:1
+        build: 
+            context: ../website
+            dockerfile: ./Dockerfile
+        ports: 
+            - ${FRONTEND_CONNECTION_PORT}:3000
+        volumes: 
+            - ${TIMEZONE_FOLDER}/timezone:/etc/timezone
+            - ${TIMEZONE_FOLDER}/localtime:/etc/localtime
+        restart: 
+            always
     transaction-api:
         image:
             api:1
@@ -34,3 +47,4 @@ services:
             - ${TIMEZONE_FOLDER}/localtime:/etc/localtime
         restart: 
             always
+   

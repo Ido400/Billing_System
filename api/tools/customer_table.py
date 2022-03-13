@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String,Float
+
 from tools.base import Base
 
 class Customer(Base):

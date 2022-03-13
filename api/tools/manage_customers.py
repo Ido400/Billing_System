@@ -21,7 +21,9 @@ class ManageCustomers:
         try:
             customers = []
             for customer in self.sql_controller.get_customers():
-                customers.append(customer.__dict__)
+                customers.append({  "customer_id": customer.customer_id,
+                                    "total_price": customer.total_price,
+                                    "currency": customer.currency})
             return customers
         except CustomerNotFoundError:
             raise CustomerNotFoundError("The customers not found")

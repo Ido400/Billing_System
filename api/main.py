@@ -1,12 +1,12 @@
 from os import abort, environ
+
 from flask import Flask, request, jsonify
-import asyncio
+from flask_cors import CORS
+
 from tools.error_handling import FailedToCreateCustomers
 from tools.manage_customers import ManageCustomers
 from tools.manage_transaction import ManageTransactions
-
 from tools.sql_controller import SqlDB
-
 from tools.error_handling import TransactionFailedError, CustomerNotFoundError
 from tools.error_handling import DeleteTransactionFailedError,GetTransactionsError
 from tools.error_handling import GetCustomersError, TransactionNotFoundError
@@ -14,6 +14,8 @@ from tools.error_handling import UpdateTransactionFailed
 from tools.logger_controller import Logger
 
 app = Flask(__name__)
+
+CORS(app)
 
 SQL_HOSTNAME=environ["SQL_HOSTNAME"]
 SQL_USERNAME=environ["SQL_USERNAME"]
@@ -34,17 +36,15 @@ manage_customers = ManageCustomers(sql_controller)
 def create_transaction():
     """
     request = {"client_id_sender":"", "client_id_getter":"", 
-                "total_transaction":0.0, "current_currency":"",
-                "converte_currency":""}
+                "total_transaction":0.0}
+    This method will create new transaction
     """
     try:
         data = request.get_json()
         manage_transaction.create_transaction(  data["client_id_sender"],
                                                 data["client_id_getter"],
-                                                data["total_transaction"],
-                                                data["current_currency"],
-                                                data["converte_currency"])
-        return "Success to do the transaction", 200
+                                                data["total_transaction"])
+        return jsonify("Success to do the transaction"), 200
     except TransactionFailedError:
         abort(500, description="Failed to do transaction")  
     except CustomerNotFoundError:
@@ -55,12 +55,14 @@ def create_transaction():
 def update_transaction():
     """
     request = {"transaction_id":0, "total_transaction":0.0}
+
+    This method will update the transaction
     """
     try:
         data = request.get_json()
         manage_transaction.update_transaction(  data["transaction_id"],
                                                 data["total_transaction"])
-        return "Updating Successfully", 200
+        return jsonify("Updating Successfully"), 200
     except UpdateTransactionFailed:
         abort(500, description="Failed to update transaction")
     except TransactionNotFoundError:
@@ -70,18 +72,23 @@ def update_transaction():
 def delete_transaction():
     """
     request = {"transaction_id":0}
+
+    This method will delete the transaction
     """
     try:
         data = request.get_json()
         manage_transaction.delete_transaction(data["transaction_id"])
-        return "Delete Successfully", 200
+        return jsonify("Delete Successfully"), 200
     except DeleteTransactionFailedError:
         abort(500, description="Failed to delete the transaction")
     except TransactionNotFoundError:
         abort(404, description="Transaction not found")
 
 @app.route("/get/transactions", methods=["GET"])
-def get_transactions():
+def get_transactions() ->list:
+    """
+    This method will return a list of transactions
+    """
     try:
         return jsonify(manage_transaction.get_all_transaction()), 200
     except GetTransactionsError:
@@ -91,6 +98,8 @@ def get_transactions():
 def insert_customers():
     """
     request = []
+
+    This method will insert all the customers
     """
     try:
         data = request.get_json()
@@ -101,6 +110,9 @@ def insert_customers():
 
 @app.route("/get/customers", methods=["GET"])
 def get_customers():
+    """
+    This method will return all thr customers
+    """
     try:
         return jsonify(manage_customers.get_customers())
     except GetCustomersError:
