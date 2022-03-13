@@ -125,6 +125,11 @@ class TransactionManage extends Component {
             let data = {client_id_sender:this.state.senderID,
                         client_id_getter:this.state.getterID,
                         total_transaction:this.state.transaction}
+            if(this.state.getterID === this.state.senderID){
+                console.error("The id is the same");
+                return
+            }
+            
             this.createTransaction(data)
         }
         else{
