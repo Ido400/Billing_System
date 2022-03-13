@@ -1,0 +1,35 @@
+.div_design{
+    width: 90%;
+    height: 20%;
+    background-color: antiquewhite;
+    margin-top: 5%;
+}
+
+.padding_1 {
+    padding: 1%;
+}
+
+.text_area {
+    border-radius: 5rem 5rem 5rem 5rem;
+    border-block: unset;
+    border-color: unset;
+    background-color: white;
+    border-width: inherit;
+    border-image: unset;
+    padding: 3%;
+    box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
+}
+
+.button_sce {
+    border: unset;
+    background-color: aliceblue;
+}
+
+.div_center{
+    padding: 1%;
+    margin-left: 45%;
+}
+
+.row_top{
+    text-decoration: underline;
+}

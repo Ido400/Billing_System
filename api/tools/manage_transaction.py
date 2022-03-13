@@ -16,9 +16,7 @@ class ManageTransactions:
     def create_transaction(self, 
                                 client_id_sender:str, 
                                 client_id_getter:str, 
-                                total_transaction:float, 
-                                current_currency:str, 
-                                converte_currency:str):
+                                total_transaction:float):
         """
         This method will create a new transaction and it will do all
         the calculation for converting the currency and add/sub from
@@ -29,13 +27,13 @@ class ManageTransactions:
             client_id_sender(str): The customer id of the sender
             client_id_getter(str): The customer id of the getter
             total_transaction(float): The total transaction
-            current_currency(str): The currency of the sender
-            converte_currency(str): The currency of the getter
         """
         try:
+            customer_sender , customer_getter = self.get_customers(client_id_sender, client_id_getter)
             customer_sender_total, customer_getter_total = self.get_customer_total(
-                                                            client_id_sender,
-                                                            client_id_getter)
+                                                            customer_sender,
+                                                            customer_getter)
+            current_currency, converte_currency = self.get_customers_currency(customer_sender,customer_getter)
             cal = Calculator(
                                 customer_sender_total, 
                                 customer_getter_total, 
@@ -143,7 +141,14 @@ class ManageTransactions:
         try:
             transactions  = []
             for transaction in self.sql_controller.get_transactions():
-                transactions.append(transaction.__dict__)
+                transactions.append({   "id":transaction.id,
+                                        "user_id_transac":transaction.user_id_transac,
+                                        "user_id_get":transaction.user_id_get,
+                                        "total_before_convert":transaction.total_before_convert,
+                                        "currency_user_transac":transaction.currency_user_transac,
+                                        "total_after_convert":transaction.total_after_convert,
+                                        "currency_user_get":transaction.currency_user_get,
+                                        "date":transaction.date})
             return transactions
         except GetTransactionsError:
             raise GetTransactionsError("Can't get the transaction")
@@ -162,9 +167,10 @@ class ManageTransactions:
             Return a tuple of the last totals
         """
         try:
+            customer_sender , customer_getter = self.get_customers(client_id_sender, client_id_getter)
             client_sender_total, client_getter_total = self.get_customer_total(
-                                                            client_id_sender,
-                                                            client_id_getter)
+                                                            customer_sender,
+                                                            customer_getter)
             cal = Calculator(
                                 client_sender_total, 
                                 client_getter_total, 
@@ -176,7 +182,7 @@ class ManageTransactions:
         except CustomerNotFoundError:
             raise CustomerNotFoundError(f"Can't find the customers")
 
-    def get_customer_total(self, client_id_sender, client_id_getter)->tuple:
+    def get_customer_total(self, customer_sender, customer_getter)->tuple:
         """
         This method will retrun the totals of the two customers
 
@@ -185,8 +191,40 @@ class ManageTransactions:
             Return the total of the two customers
         """
         try:
-            customer_sender_total = self.sql_controller.get_customer(client_id_sender)["total_price"]
-            customer_getter_total = self.sql_controller.get_customer(client_id_getter)["total_price"]
+           
+            customer_sender_total = customer_sender["total_price"]
+            customer_getter_total = customer_getter["total_price"]
             return (customer_sender_total, customer_getter_total)
+        except CustomerNotFoundError:
+            raise CustomerNotFoundError(f"Can't find the customers ids")
+
+    def get_customers_currency(self, customer_sender, customer_getter):
+        """
+        This method will return thr customers currency
+
+        Return:
+        -------
+            Return a tuple of the two currency of the customers
+        """
+        try:
+           
+            customer_sender_currency = customer_sender["currency"]
+            customer_getter_currency = customer_getter["currency"]
+            return (customer_sender_currency, customer_getter_currency)
+        except CustomerNotFoundError:
+            raise CustomerNotFoundError(f"Can't find the customers ids")
+
+    def get_customers(self,client_id_sender, client_id_getter):
+        """
+        This method will return the two customers data
+
+        Return:
+        -------
+            Return a tuple of the two customers
+        """
+        try:
+            customer_sender = self.sql_controller.get_customer(client_id_sender)
+            customer_getter = self.sql_controller.get_customer(client_id_getter)
+            return (customer_sender, customer_getter)
         except CustomerNotFoundError:
             raise CustomerNotFoundError(f"Can't find the customers ids")

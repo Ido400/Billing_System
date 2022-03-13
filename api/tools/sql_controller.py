@@ -1,9 +1,9 @@
 from datetime import datetime
-from locale import currency
 import sys
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from tools.error_handling import FailedToCreateCustomers
 from tools.error_handling import TransactionFailedError, CustomerNotFoundError
 from tools.error_handling import DeleteTransactionFailedError,GetTransactionsError
